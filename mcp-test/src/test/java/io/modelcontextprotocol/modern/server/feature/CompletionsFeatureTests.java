@@ -287,6 +287,14 @@ class CompletionsFeatureTests {
 	}
 
 	@Test
+	void missingRefTypeIsRejectedAsInvalidParams() {
+		JSONRPCResponse response = complete(server(), Map.of("name", "code_review"), "language", "ja", null);
+
+		assertThat(response.error().code()).isEqualTo(ErrorCodes.INVALID_PARAMS);
+		assertThat(response.error().message()).isEqualTo("params.ref.type is required");
+	}
+
+	@Test
 	void missingArgumentIsRejectedAsInvalidParams() {
 		JSONRPCRequest request = new JSONRPCRequest(McpSchema.METHOD_COMPLETION_COMPLETE, 1,
 				Map.of("_meta", meta(), "ref", prompt("code_review")));

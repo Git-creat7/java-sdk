@@ -50,9 +50,12 @@ final class CompletionsFeature implements McpFeature {
 		if (map.get("argument") == null) {
 			return Mono.error(McpException.invalidParams("params.argument is required"));
 		}
-		McpFeature feature = this.byRefType.get(ref.get("type"));
+		if (!(ref.get("type") instanceof String refType)) {
+			return Mono.error(McpException.invalidParams("params.ref.type is required"));
+		}
+		McpFeature feature = this.byRefType.get(refType);
 		if (feature == null) {
-			return Mono.error(McpException.invalidParams("Unsupported ref type: " + ref.get("type")));
+			return Mono.error(McpException.invalidParams("Unsupported ref type: " + refType));
 		}
 		CompleteRequest request;
 		try {
