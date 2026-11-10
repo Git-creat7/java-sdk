@@ -10,15 +10,32 @@ import java.util.Map;
 import io.modelcontextprotocol.modern.McpException;
 import io.modelcontextprotocol.modern.McpSchema.ClientCapabilities;
 import io.modelcontextprotocol.modern.server.McpRequestContext;
+import io.modelcontextprotocol.util.Assert;
+import reactor.util.annotation.Nullable;
 
-final class RequiredCapabilities {
+/**
+ * Checks that the client declared the capabilities a primitive requires before its
+ * handler runs.
+ *
+ * @author Dariusz Jędrzejczyk
+ */
+public final class RequiredCapabilities {
 
 	private RequiredCapabilities() {
 	}
 
-	// A -32021 listing the required capabilities the client did not declare, or null if
-	// it declared all of them.
-	static McpException check(ClientCapabilities required, McpRequestContext ctx) {
+	/**
+	 * Returns a {@code -32021} {@link McpException} listing the {@code required}
+	 * capabilities the client did not declare on {@code ctx}, or {@code null} if it
+	 * declared all of them.
+	 * @param required the capabilities required by the primitive
+	 * @param ctx the current request context
+	 * @return an {@link McpException} for the missing capabilities, or {@code null}
+	 */
+	@Nullable
+	public static McpException check(ClientCapabilities required, McpRequestContext ctx) {
+		Assert.notNull(required, "required must not be null");
+		Assert.notNull(ctx, "ctx must not be null");
 		ClientCapabilities missing = missing(required, ctx.clientCapabilities());
 		return missing != null ? McpException.missingClientCapability(missing) : null;
 	}
